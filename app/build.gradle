@@ -1,0 +1,54 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "com.zhang.autopack"
+        minSdkVersion 15
+        targetSdkVersion 22
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    //签名
+    signingConfigs {
+        releaseConfig {
+            storeFile rootProject.ext.storeFile
+            storePassword rootProject.ext.storePassword
+            keyAlias rootProject.ext.keyAlias
+            keyPassword rootProject.ext.keyPassword
+        }
+        debugConfig {
+            storeFile rootProject.ext.debugstoreFile
+            storePassword rootProject.ext.debugStorePassword
+            keyAlias rootProject.ext.debugKeyAlias
+            keyPassword rootProject.ext.debugKeyPassword
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            //Zipalign优化
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.releaseConfig
+
+            android.applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    output.outputFile = new File(rootProject.ext.outputFilePath,
+                            "autoPack" + "-release-" + rootProject.ext.versionName + ".apk");
+                }
+            }
+        }
+
+    }
+}
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:25.0.0'
+    testCompile 'junit:junit:4.12'
+}
